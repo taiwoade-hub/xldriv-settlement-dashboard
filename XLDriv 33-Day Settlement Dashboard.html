@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#F7B401">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self';">
+  <title>XLDriv 33-Day Settlement Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23F7B401'/%3E%3Ctext x='16' y='21.5' text-anchor='middle' font-family='Arial,sans-serif' font-size='14' font-weight='700' fill='%230F131A'%3EXL%3C/text%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --brand: #F7B401;
+      --brand-hover: #E5A600;
+      --ink: #0F131A;
+      --ink-secondary: #374151;
+      --muted: #6B7280;
+      --bg: #FAFAFA;
+      --surface: #FFFFFF;
+      --surface-subtle: #F4F5F7;
+      --line: #E5E7EB;
+      --line-strong: #D1D5DB;
+
+      /* Muted institutional status tones (no neon) */
+      --status-green: #15803D;
+      --status-red: #B91C1C;
+      --status-amber: #B45309;
+      --status-neutral: #6B7280;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      overflow-x: clip;
+    }
+
+    body {
+      margin: 0;
+      border-top: 3px solid var(--brand);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.5;
+      overflow-x: clip;
+    }
+
+    h1, h2, h3, .brand-font, .value {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    .tabular {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 28px 24px 48px;
+    }
+
+    /* Minimal Utility Topbar */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 14px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .brand-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 5px;
+      background: var(--brand);
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0;
+      flex-shrink: 0;
+    }
+
+    .topbar-divider {
+      color: var(--line-strong);
+      user-select: none;
+    }
+
+    .topbar-brief {
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+    }
+
+    /* Flat Editorial Header */
+    header {
+      background: transparent;
+      padding: 0 0 24px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 20px;
+    }
+
+    .header-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--ink-secondary);
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
+    .header-right {
+      text-align: right;
+      font-size: 12px;
+      line-height: 1.75;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .header-right strong {
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 12.5px;
+      letter-spacing: 0.03em;
+    }
+
+    /* Sections */
+    .section {
+      margin-top: 32px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--ink);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 12.5px;
+      margin: 3px 0 0;
+    }
+
+    /* KPI Grid */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 20px;
+    }
+
+    .card h3 {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-top: 10px;
+      color: var(--ink);
+      line-height: 1.15;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* Tables */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    .settlement-table {
+      min-width: 820px;
+    }
+
+    th {
+      background: var(--surface-subtle);
+      color: #4B5563;
+      text-align: left;
+      padding: 12px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--line);
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #F1F3F5;
+      font-size: 13px;
+      line-height: 1.45;
+      vertical-align: middle;
+      color: var(--ink);
+      background: var(--surface);
+    }
+
+    tbody tr:hover td {
+      background: var(--bg);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tfoot td {
+      background: var(--surface-subtle);
+      font-weight: 600;
+      border-top: 1.5px solid var(--ink);
+      border-bottom: none;
+      color: var(--ink);
+    }
+
+    th.num,
+    td.num,
+    th.money,
+    td.money {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    td.money {
+      font-weight: 500;
+    }
+
+    tfoot td.money {
+      font-weight: 600;
+    }
+
+    td[colspan] {
+      text-align: center;
+      color: var(--muted);
+      padding: 20px 14px;
+    }
+
+    .mobile-scroll-hint {
+      display: none;
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    /* Controls & Inputs */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+
+    select, input {
+      padding: 8px 12px;
+      min-height: 38px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 13px;
+      transition: border-color 0.15s ease;
+    }
+
+    select:focus-visible,
+    input:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--ink);
+      outline-offset: 1px;
+    }
+
+    input[type="search"] {
+      min-width: 240px;
+      flex: 1;
+      max-width: 340px;
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 14px;
+      min-height: 38px;
+      background: var(--brand);
+      color: var(--ink);
+      border: 1px solid var(--brand);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 12.5px;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      background: var(--brand-hover);
+      border-color: var(--brand-hover);
+    }
+
+    button.secondary {
+      background: var(--surface);
+      color: var(--ink-secondary);
+      border: 1px solid var(--line-strong);
+    }
+
+    button.secondary:hover {
+      background: var(--surface-subtle);
+      color: var(--ink);
+      border-color: var(--line-strong);
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* Table Footer */
+    .table-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--surface-subtle);
+      border-top: 1px solid var(--line);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .note {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--ink);
+      color: var(--ink-secondary);
+      padding: 13px 16px;
+      border-radius: var(--radius-sm);
+      margin-top: 12px;
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+
+    .overview-note {
+      margin-top: 20px;
+    }
+
+    .note strong {
+      color: var(--ink);
+    }
+
+    .actions {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 20px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--ink-secondary);
+    }
+
+    .actions strong {
+      color: var(--ink);
+    }
+
+    .actions p {
+      margin: 0 0 10px;
+    }
+
+    .actions p:last-child {
+      margin-bottom: 0;
+    }
+
+    .two-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .chart-card {
+      background: var(--surface);
+      padding: 20px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+    }
+
+    .chart-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 0 0 16px;
+      color: var(--ink);
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 165px 1fr 120px;
+      gap: 12px;
+      align-items: center;
+      margin: 14px 0;
+      font-size: 12.5px;
+      color: var(--ink-secondary);
+    }
+
+    .bar-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .bar-row strong {
+      text-align: right;
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .track {
+      height: 6px;
+      background: #ECEEF2;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      min-width: 4px;
+      background: var(--brand);
+      border-radius: 999px;
+    }
+
+    .fill.charcoal {
+      background: var(--ink-secondary);
+    }
+
+    footer {
+      padding: 24px 0 4px;
+      color: var(--muted);
+      font-size: 11.5px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      border-top: 1px solid var(--line);
+      margin-top: 36px;
+    }
+
+    /* Tablet */
+    @media (max-width: 900px) {
+      .kpis {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .two-columns {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header-right {
+        text-align: left;
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .container {
+        padding: 16px 14px 36px;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .topbar-right {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 8px;
+      }
+
+      #reportMetaTop {
+        display: none;
+      }
+
+      header h1 {
+        font-size: 22px;
+      }
+
+      .kpis {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .card {
+        padding: 15px;
+      }
+
+      .value {
+        font-size: 20px;
+      }
+
+      select,
+      input,
+      button {
+        min-height: 40px;
+        font-size: 14px;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .controls select,
+      .controls button {
+        min-width: 0;
+        width: 100%;
+        font-size: 13px;
+        padding: 8px 10px;
+      }
+
+      #dayFilter,
+      #searchInput {
+        grid-column: 1 / -1;
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+      }
+
+      .mobile-scroll-hint {
+        display: block;
+      }
+
+      /* Sticky first column for 8-column settlement schedule table */
+      .settlement-table th:first-child,
+      .settlement-table td:first-child:not([colspan]) {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        border-right: 1px solid var(--line);
+      }
+
+      .settlement-table thead th:first-child,
+      .settlement-table tfoot td:first-child:not([colspan]) {
+        background: var(--surface-subtle);
+      }
+
+      .settlement-table tbody td:first-child:not([colspan]) {
+        background: var(--surface);
+      }
+
+      .settlement-table tbody tr:hover td:first-child:not([colspan]) {
+        background: var(--bg);
+      }
+
+      .table-footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      footer {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .bar-row {
+        grid-template-columns: 1fr auto;
+        row-gap: 6px;
+        column-gap: 10px;
+      }
+
+      .bar-row .track {
+        grid-column: 1 / -1;
+        order: 3;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .kpis {
+        grid-template-columns: 1fr;
+      }
+
+      .value {
+        font-size: 24px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        border-top: none;
+        background: #FFFFFF;
+      }
+
+      .controls,
+      .no-print,
+      .topbar,
+      .mobile-scroll-hint {
+        display: none !important;
+      }
+
+      .container {
+        max-width: none;
+        padding: 0;
+      }
+
+      .panel,
+      .table-wrap {
+        overflow: visible;
+      }
+
+      table,
+      .settlement-table {
+        min-width: 0;
+        width: 100%;
+      }
+
+      th,
+      td {
+        padding: 6px 8px;
+        font-size: 10px;
+      }
+
+      th {
+        white-space: normal;
+      }
+
+      thead {
+        display: table-header-group;
+      }
+
+      tfoot {
+        display: table-row-group;
+      }
+
+      .section-head {
+        break-after: avoid;
+      }
+
+      .card,
+      .chart-card,
+      .note,
+      .actions,
+      tr {
+        break-inside: avoid;
+      }
+
+      .fill,
+      .track {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Minimal Utility & Trust Topbar -->
+    <div class="topbar no-print">
+      <div class="topbar-left">
+        <span class="brand-mark">
+          <span class="brand-icon">XL</span>
+          <span>XLDRIV</span>
+        </span>
+        <span class="topbar-divider" aria-hidden="true">/</span>
+        <span class="topbar-brief">Investor &amp; Settlement Brief</span>
+      </div>
+      <div class="topbar-right">
+        <span id="reportMetaTop">Payment Gateway: Monnify · 33 Days</span>
+        <button type="button" class="secondary" id="printBtn">Print / PDF</button>
+      </div>
+    </div>
+
+    <header>
+      <div>
+        <div class="header-eyebrow">Settlement Report</div>
+        <h1>XLDriv 33-Day Settlement Dashboard</h1>
+        <p id="headerMeta">
+          Reporting Period: April 22 – May 24, 2026 · Payment Gateway: Monnify · Settlement Coverage: 33 Days
+        </p>
+      </div>
+      <div class="header-right">
+        <strong>XLDRIV LIMITED</strong><br>
+        Financial Settlement Overview<br>
+        <span>Reporting Year: 2026</span>
+      </div>
+    </header>
+
+    <div class="note overview-note">
+      <strong>Settlement Overview:</strong>
+      This dashboard presents the 33-day driver subscription collection and settlement schedule. It shows daily paying drivers, gross collections, base gateway fees, VAT on fees, total gateway charges and net payout.
+    </div>
+
+    <!-- SECTION 1: KPI SUMMARY -->
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">1. Executive Settlement Summary</h2>
+          <p class="subtitle">Consolidated financial figures for the entire 33-day reporting period.</p>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="card">
+          <h3>Total Payments</h3>
+          <div class="value tabular">1,750</div>
+          <div class="small">Successful subscription transactions</div>
+        </div>
+
+        <div class="card">
+          <h3>Total Gross Collections</h3>
+          <div class="value tabular">₦4,287,500.00</div>
+          <div class="small">Gross subscription collections</div>
+        </div>
+
+        <div class="card">
+          <h3>Base Gateway Fee</h3>
+          <div class="value tabular">₦64,329.30</div>
+          <div class="small">Total base gateway charges</div>
+        </div>
+
+        <div class="card">
+          <h3>VAT on Gateway Fee</h3>
+          <div class="value tabular">₦4,824.70</div>
+          <div class="small">Total VAT on gateway fees</div>
+        </div>
+
+        <div class="card">
+          <h3>Total Gateway Charges</h3>
+          <div class="value tabular">₦69,154.00</div>
+          <div class="small">Base fee plus VAT</div>
+        </div>
+
+        <div class="card">
+          <h3>Net Settlement Payout</h3>
+          <div class="value tabular">₦4,218,346.00</div>
+          <div class="small">Net payout after gateway charges</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: SETTLEMENT TABLE -->
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">2. Detailed 33-Day Settlement Schedule</h2>
+          <p class="subtitle">Daily subscription transactions and settlement calculations.</p>
+        </div>
+      </div>
+
+      <div class="controls no-print">
+        <select id="dayFilter" aria-label="Filter by settlement day">
+          <option value="ALL">All 33 Days</option>
+        </select>
+
+        <input type="search" id="searchInput" placeholder="Search date or day number..." aria-label="Search settlement schedule">
+
+        <button type="button" class="secondary" id="resetFiltersBtn">Reset Filters</button>
+        <button type="button" id="exportCsvBtn">Export Settlement CSV</button>
+      </div>
+
+      <div class="mobile-scroll-hint no-print">Swipe horizontally to view all columns</div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table class="settlement-table">
+            <thead>
+              <tr>
+                <th>Day #</th>
+                <th>Date (2026)</th>
+                <th class="num">Paying Drivers</th>
+                <th class="money">Daily Gross (₦)</th>
+                <th class="money">Base Gateway Fee (₦)</th>
+                <th class="money">VAT on Fee (₦)</th>
+                <th class="money">Total Gateway Charges (₦)</th>
+                <th class="money">Net Payout (₦)</th>
+              </tr>
+            </thead>
+            <tbody id="settlementBody"></tbody>
+            <tfoot id="settlementFoot"></tfoot>
+          </table>
+        </div>
+        <div class="table-footer">
+          <span id="dayCount">Showing 33 of 33 settlement days.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: FINANCIAL BREAKDOWN -->
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">3. Financial Settlement Breakdown</h2>
+          <p class="subtitle">Distribution of gross collections between gateway charges and net payout.</p>
+        </div>
+      </div>
+
+      <div class="two-columns">
+        <div class="chart-card">
+          <h3>Gross Collection Allocation · ₦4,287,500.00</h3>
+
+          <div class="bar-row">
+            <span>Net Payout (98.39%)</span>
+            <div class="track">
+              <div class="fill" style="width:98.39%"></div>
+            </div>
+            <strong class="tabular">₦4,218,346.00</strong>
+          </div>
+
+          <div class="bar-row">
+            <span>Gateway Charges (1.61%)</span>
+            <div class="track">
+              <div class="fill charcoal" style="width:1.61%"></div>
+            </div>
+            <strong class="tabular">₦69,154.00</strong>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3>Gateway Charges Breakdown · ₦69,154.00</h3>
+
+          <div class="bar-row">
+            <span>Base Gateway Fee (93.02%)</span>
+            <div class="track">
+              <div class="fill" style="width:93.02%"></div>
+            </div>
+            <strong class="tabular">₦64,329.30</strong>
+          </div>
+
+          <div class="bar-row">
+            <span>VAT on Fee (6.98%)</span>
+            <div class="track">
+              <div class="fill charcoal" style="width:6.98%"></div>
+            </div>
+            <strong class="tabular">₦4,824.70</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: SETTLEMENT ANALYSIS -->
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">4. Settlement Performance Analysis</h2>
+          <p class="subtitle">Consolidated summary of collections, gateway deductions, and net settlement payout.</p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <p>
+          <strong>Total Successful Subscription Transactions:</strong>
+          <span class="tabular">1,750</span> transactions recorded throughout the 33-day testing period.
+        </p>
+
+        <p>
+          <strong>Total Gross Subscription Collections:</strong>
+          <span class="tabular">₦4,287,500.00</span>.
+        </p>
+
+        <p>
+          <strong>Total Gateway Charges:</strong>
+          <span class="tabular">₦69,154.00</span>, comprising <span class="tabular">₦64,329.30</span> base gateway fees and <span class="tabular">₦4,824.70</span> VAT on fees.
+        </p>
+
+        <p>
+          <strong>Net Settlement Payout:</strong>
+          <span class="tabular">₦4,218,346.00</span> after deduction of gateway charges.
+        </p>
+
+        <p>
+          <strong>Reporting Period:</strong>
+          April 22, 2026 to May 24, 2026.
+        </p>
+      </div>
+    </section>
+
+    <footer>
+      <span>XLDriv Limited · 33-Day Subscription Settlement Report · April 22 – May 24, 2026</span>
+      <span>Prepared for Management &amp; Investor Review</span>
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      // ==========================================
+      // XLDRIV 33-DAY SETTLEMENT DATA
+      // Source: Uploaded Excel settlement schedule
+      // Each row: [Day, Date, Drivers, Gross, Base Fee, VAT, Charges, Net]
+      // ==========================================
+      const rawData = [
+        [1, "Wed, Apr 22, 2026", 53, 129850, 1948.26, 146.12, 2094.38, 127755.62],
+        [2, "Thu, Apr 23, 2026", 54, 132300, 1985.02, 148.88, 2133.90, 130166.10],
+        [3, "Fri, Apr 24, 2026", 55, 134750, 2021.78, 151.63, 2173.41, 132576.59],
+        [4, "Sat, Apr 25, 2026", 52, 127400, 1911.50, 143.36, 2054.86, 125345.14],
+        [5, "Sun, Apr 26, 2026", 49, 120050, 1801.22, 135.09, 1936.31, 118113.69],
+        [6, "Mon, Apr 27, 2026", 54, 132300, 1985.02, 148.88, 2133.90, 130166.10],
+        [7, "Tue, Apr 28, 2026", 54, 132300, 1985.02, 148.88, 2133.90, 130166.10],
+        [8, "Wed, Apr 29, 2026", 55, 134750, 2021.78, 151.63, 2173.41, 132576.59],
+        [9, "Thu, Apr 30, 2026", 54, 132300, 1985.02, 148.88, 2133.90, 130166.10],
+        [10, "Fri, May 01, 2026", 55, 134750, 2021.78, 151.63, 2173.41, 132576.59],
+        [11, "Sat, May 02, 2026", 52, 127400, 1911.50, 143.36, 2054.86, 125345.14],
+        [12, "Sun, May 03, 2026", 49, 120050, 1801.22, 135.09, 1936.31, 118113.69],
+        [13, "Mon, May 04, 2026", 54, 132300, 1985.02, 148.88, 2133.90, 130166.10],
+        [14, "Tue, May 05, 2026", 54, 132300, 1985.02, 148.88, 2133.90, 130166.10],
+        [15, "Wed, May 06, 2026", 54, 132300, 1985.02, 148.88, 2133.90, 130166.10],
+        [16, "Thu, May 07, 2026", 55, 134750, 2021.78, 151.63, 2173.41, 132576.59],
+        [17, "Fri, May 08, 2026", 55, 134750, 2021.78, 151.63, 2173.41, 132576.59],
+        [18, "Sat, May 09, 2026", 52, 127400, 1911.50, 143.36, 2054.86, 125345.14],
+        [19, "Sun, May 10, 2026", 49, 120050, 1801.22, 135.09, 1936.31, 118113.69],
+        [20, "Mon, May 11, 2026", 54, 132300, 1985.02, 148.88, 2133.90, 130166.10],
+        [21, "Tue, May 12, 2026", 54, 132300, 1985.02, 148.88, 2133.90, 130166.10],
+        [22, "Wed, May 13, 2026", 54, 132300, 1985.02, 148.88, 2133.90, 130166.10],
+        [23, "Thu, May 14, 2026", 54, 132300, 1985.02, 148.88, 2133.90, 130166.10],
+        [24, "Fri, May 15, 2026", 55, 134750, 2021.78, 151.63, 2173.41, 132576.59],
+        [25, "Sat, May 16, 2026", 52, 127400, 1911.50, 143.36, 2054.86, 125345.14],
+        [26, "Sun, May 17, 2026", 49, 120050, 1801.22, 135.09, 1936.31, 118113.69],
+        [27, "Mon, May 18, 2026", 54, 132300, 1985.02, 148.88, 2133.90, 130166.10],
+        [28, "Tue, May 19, 2026", 54, 132300, 1985.02, 148.88, 2133.90, 130166.10],
+        [29, "Wed, May 20, 2026", 54, 132300, 1985.02, 148.88, 2133.90, 130166.10],
+        [30, "Thu, May 21, 2026", 54, 132300, 1985.02, 148.88, 2133.90, 130166.10],
+        [31, "Fri, May 22, 2026", 53, 129850, 1948.26, 146.12, 2094.38, 127755.62],
+        [32, "Sat, May 23, 2026", 51, 124950, 1874.74, 140.61, 2015.35, 122934.65],
+        [33, "Sun, May 24, 2026", 49, 120050, 1801.18, 135.07, 1936.25, 118113.75]
+      ];
+
+      // ==========================================
+      // OFFICIAL TOTALS FROM EXCEL
+      // ==========================================
+      const totals = {
+        drivers: 1750,
+        gross: 4287500,
+        base: 64329.30,
+        vat: 4824.70,
+        charges: 69154.00,
+        net: 4218346.00
+      };
+
+      // Formatting helpers
+      const fmt = (n) => Number(n || 0).toLocaleString("en-NG");
+      const money = (n) => "₦" + Number(n || 0).toLocaleString("en-NG", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+
+      // Safe DOM cell builders
+      function td(text, className) {
+        const cell = document.createElement("td");
+        if (className) cell.className = className;
+        cell.textContent = text;
+        return cell;
+      }
+
+      function tdStrong(text, className) {
+        const cell = document.createElement("td");
+        if (className) cell.className = className;
+        const strong = document.createElement("strong");
+        strong.textContent = text;
+        cell.appendChild(strong);
+        return cell;
+      }
+
+      function getFilterState() {
+        const filter = document.getElementById("dayFilter").value;
+        const search = document.getElementById("searchInput").value.trim().toLowerCase();
+        const isUnfiltered = filter === "ALL" && search === "";
+
+        const filtered = rawData.filter((row) => {
+          const dayMatch = filter === "ALL" || String(row[0]) === filter;
+          const searchMatch = !search || `day ${row[0]} ${row[1]}`.toLowerCase().includes(search);
+          return dayMatch && searchMatch;
+        });
+
+        return { filtered, isUnfiltered };
+      }
+
+      function computeSubsetTotals(rows) {
+        const sums = rows.reduce((acc, row) => ({
+          drivers: acc.drivers + Number(row[2] || 0),
+          grossCents: acc.grossCents + Math.round(Number(row[3] || 0) * 100),
+          baseCents: acc.baseCents + Math.round(Number(row[4] || 0) * 100),
+          vatCents: acc.vatCents + Math.round(Number(row[5] || 0) * 100),
+          chargesCents: acc.chargesCents + Math.round(Number(row[6] || 0) * 100),
+          netCents: acc.netCents + Math.round(Number(row[7] || 0) * 100)
+        }), { drivers: 0, grossCents: 0, baseCents: 0, vatCents: 0, chargesCents: 0, netCents: 0 });
+
+        return {
+          drivers: sums.drivers,
+          gross: sums.grossCents / 100,
+          base: sums.baseCents / 100,
+          vat: sums.vatCents / 100,
+          charges: sums.chargesCents / 100,
+          net: sums.netCents / 100
+        };
+      }
+
+      function renderTable() {
+        const { filtered, isUnfiltered } = getFilterState();
+        const body = document.getElementById("settlementBody");
+        const foot = document.getElementById("settlementFoot");
+        body.replaceChildren();
+        foot.replaceChildren();
+
+        if (filtered.length === 0) {
+          const tr = document.createElement("tr");
+          const emptyTd = document.createElement("td");
+          emptyTd.colSpan = 8;
+          emptyTd.textContent = "No matching settlement records found.";
+          tr.appendChild(emptyTd);
+          body.appendChild(tr);
+        } else {
+          filtered.forEach((row) => {
+            const tr = document.createElement("tr");
+            tr.appendChild(tdStrong(String(row[0]), "tabular"));
+            tr.appendChild(td(row[1]));
+            tr.appendChild(td(fmt(row[2]), "num"));
+            tr.appendChild(td(money(row[3]), "money"));
+            tr.appendChild(td(money(row[4]), "money"));
+            tr.appendChild(td(money(row[5]), "money"));
+            tr.appendChild(td(money(row[6]), "money"));
+            tr.appendChild(tdStrong(money(row[7]), "money"));
+            body.appendChild(tr);
+          });
+
+          const summary = isUnfiltered ? totals : computeSubsetTotals(filtered);
+          const footTr = document.createElement("tr");
+          footTr.appendChild(td(isUnfiltered ? "TOTAL" : "SUBTOTAL"));
+          footTr.appendChild(td(
+            isUnfiltered
+              ? "33 Days"
+              : `${filtered.length} ${filtered.length === 1 ? "Day" : "Days"}`
+          ));
+          footTr.appendChild(td(fmt(summary.drivers), "num"));
+          footTr.appendChild(td(money(summary.gross), "money"));
+          footTr.appendChild(td(money(summary.base), "money"));
+          footTr.appendChild(td(money(summary.vat), "money"));
+          footTr.appendChild(td(money(summary.charges), "money"));
+          footTr.appendChild(tdStrong(money(summary.net), "money"));
+          foot.appendChild(footTr);
+        }
+
+        document.getElementById("dayCount").textContent =
+          `Showing ${filtered.length} of ${rawData.length} settlement days.`;
+        document.getElementById("exportCsvBtn").disabled = filtered.length === 0;
+      }
+
+      function loadDays() {
+        const select = document.getElementById("dayFilter");
+        rawData.forEach((row) => {
+          const option = document.createElement("option");
+          option.value = String(row[0]);
+          option.textContent = `Day ${row[0]} - ${row[1]}`;
+          select.appendChild(option);
+        });
+      }
+
+      function resetFilters() {
+        document.getElementById("dayFilter").value = "ALL";
+        document.getElementById("searchInput").value = "";
+        renderTable();
+      }
+
+      // CSV Formula Injection Protection (CWE-1236)
+      function sanitizeCsvCell(value) {
+        let str = String(value ?? "");
+        if (/^[\t\r]|^[ \t\r\n]*[=+\-@]/.test(str)) {
+          str = "'" + str;
+        }
+        return '"' + str.replace(/"/g, '""') + '"';
+      }
+
+      function saveCSV(filename, rows) {
+        const csv = rows.map((row) => row.map(sanitizeCsvCell).join(",")).join("\r\n");
+        const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      function exportCSV() {
+        const { filtered, isUnfiltered } = getFilterState();
+        if (filtered.length === 0) return;
+
+        const headers = [
+          "Day",
+          "Date",
+          "Paying Drivers",
+          "Daily Gross (NGN)",
+          "Base Gateway Fee (NGN)",
+          "VAT on Fee (NGN)",
+          "Total Gateway Charges (NGN)",
+          "Net Payout (NGN)"
+        ];
+
+        const rows = [headers, ...filtered];
+        const summary = isUnfiltered ? totals : computeSubsetTotals(filtered);
+        rows.push([
+          isUnfiltered ? "TOTAL" : "SUBTOTAL",
+          isUnfiltered
+            ? "33 Days"
+            : `${filtered.length} ${filtered.length === 1 ? "Day" : "Days"}`,
+          summary.drivers,
+          summary.gross,
+          summary.base,
+          summary.vat,
+          summary.charges,
+          summary.net
+        ]);
+
+        const filename = isUnfiltered
+          ? "XLDriv-33-Day-Settlement-Report.csv"
+          : "XLDriv-33-Day-Settlement-Report-Filtered.csv";
+        saveCSV(filename, rows);
+      }
+
+      // Event Bindings (no inline onclick)
+      document.getElementById("dayFilter").addEventListener("change", renderTable);
+      document.getElementById("searchInput").addEventListener("input", renderTable);
+      document.getElementById("resetFiltersBtn").addEventListener("click", resetFilters);
+      document.getElementById("exportCsvBtn").addEventListener("click", exportCSV);
+      document.getElementById("printBtn").addEventListener("click", () => window.print());
+
+      // Initialize
+      loadDays();
+      renderTable();
+    })();
+  </script>
+</body>
+</html>

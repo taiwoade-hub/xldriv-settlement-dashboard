@@ -1,0 +1,14 @@
+{
+  "name": "xldriv-settlement-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "XLDriv 33-Day Settlement Dashboard",
+  "scripts": {
+    "build": "mkdir -p dist && cp index.html dist/index.html",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.2.0"
+  }
+}

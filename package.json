@@ -4,7 +4,7 @@
   "private": true,
   "description": "XLDriv 33-Day Settlement Dashboard",
   "scripts": {
-    "build": "mkdir -p dist && cp index.html dist/index.html",
+    "build": "mkdir -p dist && cp index.html CNAME dist/",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
